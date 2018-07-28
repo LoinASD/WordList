@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <io.cyanlab.wordlist.views.CustomView
+        android:layout_width="match_parent"
+        android:background="@color/MaterialDarkerCyan"
+        android:layout_height="match_parent" />
+
+    <androidx.appcompat.view.menu.ListMenuItemView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </androidx.appcompat.view.menu.ListMenuItemView>
+
+</LinearLayout>

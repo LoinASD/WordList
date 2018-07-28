@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorAccent">#f50057</color>
 
-
-
+    <color name="white">#fff</color>
+    <color name="transparent">#00000000</color>
     <color name="MaterialBackground">#263238</color>
     <color name="MaterialDarkerBackground">#2d3238</color>
 
