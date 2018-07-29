@@ -5,6 +5,11 @@ import android.os.Message
 import android.view.View
 import android.widget.Toast
 import io.cyanlab.wordlist.MainActivity
+import io.cyanlab.wordlist.models.pdf.Delegator
+import io.cyanlab.wordlist.models.pdf.PDFParser
+import java.io.IOException
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.lang.ref.WeakReference
 
 open class MainHandler  : Handler() {
@@ -24,6 +29,29 @@ open class MainHandler  : Handler() {
     }
 
 
+    //-----CODE FROM MAIN ACTIVITY----------------
+
+    fun startParser(file: String) {
+
+        val pout: PipedOutputStream
+        val pin: PipedInputStream
+        try {
+            pout = PipedOutputStream()
+            pin = PipedInputStream(pout)
+            parser = Thread(Runnable { PDFParser().parsePdf(file, pout) })
+
+            extractor = Thread(Runnable { Delegator().extract(pin) })
+            parser.setPriority(Thread.MAX_PRIORITY)
+            parser.start()
+            extractor.start()
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+    }
+
+//------------------------------------------------------
 
     @Volatile
     internal var parser: Boolean = false
