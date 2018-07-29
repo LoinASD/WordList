@@ -19,6 +19,7 @@
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/MaterialDarkerCyan"
             app:elevation="0dp"
+            app:titleTextColor="@color/cyan_900"
             app:navigationIcon="@drawable/ic_menu_cyan_900_24dp">
 
 

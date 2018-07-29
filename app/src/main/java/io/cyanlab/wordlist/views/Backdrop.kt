@@ -19,8 +19,7 @@ import io.cyanlab.wordlist.R
 
 class Backdrop(context: Context, attributeSet: AttributeSet): FrameLayout( context, attributeSet) {
 
-    private val dropHeight: Int = 200
-
+    private val dropHeight: Int = context.resources.getDimensionPixelOffset(R.dimen.backdrop_height)
 
     private lateinit var toolbar: Toolbar
     private var openIcon: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.ic_menu_cyan_900_24dp, null)
@@ -106,6 +105,7 @@ class Backdrop(context: Context, attributeSet: AttributeSet): FrameLayout( conte
             }
 
             backdropShown = !backdropShown
+
 
             val size = backView.width + view.height - dropHeight
             val translateY = height - size
