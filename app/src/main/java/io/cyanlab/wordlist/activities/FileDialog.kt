@@ -16,29 +16,19 @@ import androidx.appcompat.app.AlertDialog
 
 class FileDialog(internal var context: Context) : AlertDialog(context) {
 
-    internal var dir: File
-    internal var files: Array<String>
-    internal var builder: AlertDialog.Builder
-    internal var dialog: AlertDialog
+    internal lateinit var dir: File
+    internal lateinit var files: Array<String>
+    internal lateinit var builder: AlertDialog.Builder
+    internal lateinit var dialog: AlertDialog
     internal var filenameFilter: FilenameFilter
     //PluginProperties plugin_props;
-    internal var fileDialogDepends: FileDialogDepends
+    internal lateinit var fileDialogDepends: FileDialogDepends
 
-    /*
-     * Определяется реакция на нажатие кнопки на диалоге:
-     * – если выбран <..> – переходим
-     *    на уровень вверх и вызываем openFileDialog
-     * – если выбрана папка – переходим
-     *    в папку и вызываем openFileDialog
-     * – если выбран файл – сохраняем текущий
-     *    путь в настройки, вызываем fileSelected,
-     * – если нажата отмена – закрываем диалог
-     */
 
     private val listenerFileDialog = DialogInterface.OnClickListener { dialog, which ->
         dialog.dismiss()
 
-        if (files[which] == "..") {//НАЖАТО НА <..>
+        if (files[which] == "..") {
             dir = File(dir.parent)
         } else
             dir = File(CURRENT_PATH + "/" + files[which])
@@ -64,11 +54,7 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
             if (file.isDirectory) {
                 true
             } else {
-                if (fileName.endsWith(".pdf")) {
-                    true
-                } else {
-                    false
-                }
+                fileName.endsWith(".pdf")
             }
         }
     }
@@ -95,7 +81,7 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
 
         dir = File(CURRENT_PATH)
         //builder.setTitle(R.string.select_file);
-        files = concatAll(dirs(dir), *files(dir, filenameFilter))
+        files = concatAll(dirs(dir), files(dir, filenameFilter))
         builder.setItems(files, listenerFileDialog)
         builder.setNegativeButton(android.R.string.cancel, null)
 
@@ -103,10 +89,7 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
         dialog.show()
     }
 
-    /*
-     * Файл выбран.
-     * @param file – выбранный файл.
-     */
+
 
     fun fileSelected(file: File) {
 
@@ -135,14 +118,6 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
 
         var ROOT_PATH = Environment.getExternalStorageDirectory().path
 
-        /*
-     * Выдает отсортированный список папок из папки path.
-     * 1) Игнорируются папки, начинающиеся с точки.
-     * 2) В начало списка помещается пункт "..".
-     * 3) Сортировка осуществляется в предпоследней строке, для
-     * регистронезависимого варианта необходимо определить
-     * соответствующий компаратор.
-     */
 
         fun dirs(path: File): Array<String> {
             val files = ArrayList<String>()
@@ -154,17 +129,10 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
                     files.add(a.name.toString() + "/")
             }
             val res = files.toTypedArray()
-            Arrays.sort(res, SortedByName())
+            Arrays.sort(res, SortedByName)
             return res
         }
 
-        /*
-     * Выдает отсортированный список файлов из папки path,
-     * отфильтрованный в соответствии с фильтром filter.
-     * Сортировка осуществляется в предпоследней строке, для
-     * регистронезависимого варианта необходимо определить
-     * соответствующий компаратор.
-     */
 
         fun files(path: File,
                   filter: FilenameFilter): Array<String> {
@@ -174,16 +142,11 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
                 if (a.isFile) files.add(a.name.toString())
 
             val res = files.toTypedArray()
-            Arrays.sort(res, SortedByName())
+            Arrays.sort(res, SortedByName)
             return res
         }
 
-        /*
-     * Объединение массивов.
-     * @param first
-     * @param rest
-     * @return
-     */
+
 
         fun <T> concatAll(first: Array<T>?, vararg rest: Array<T>): Array<T> {
             var totalLength = 0
@@ -203,7 +166,7 @@ class FileDialog(internal var context: Context) : AlertDialog(context) {
         }
     }
 
-    inner class SortedByName : Comparator<String> {
+    object SortedByName : Comparator<String> {
         override fun compare(p0: String?, p1: String?): Int {
             var str1 = p0 as String
             var str2 = p1 as String

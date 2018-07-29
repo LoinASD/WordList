@@ -124,13 +124,13 @@ class PDFParser() {
                 }
             }
             decoder!!.join()
-            MainActivity.h.sendEmptyMessage(1)
+           // MainActivity.h.sendEmptyMessage(1)
             out.close()
             log.warning("PDFParser works (ms): " + (System.currentTimeMillis() - startTime))
         } catch (e: FileNotFoundException) {
-            MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
+           // MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
         } catch (e: IOException) {
-            MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
+          //  MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }

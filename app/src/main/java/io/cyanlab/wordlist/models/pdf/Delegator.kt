@@ -58,11 +58,11 @@ class Delegator {
             parse()
             if (gotDictionary && !isExists) {
                 nodeCollect()
-            } else if (isExists) {
-                MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_EXISTS)
+            } /*else if (isExists) {
+                io.cyanlab.wordlist.controllers.MainHandler.HANDLE_MESSAGE_EXISTS)
             } else {
                 MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
-            }
+            }*/
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -210,18 +210,18 @@ class Delegator {
           This method take all prims, convert text and sort
          */
 
-        nodes!!.add(waitingNode)
+        nodes!!.add(waitingNode!!)
 
         val list = WordList()
-        list.setWlName(newWlName)
-        list.currentWeight = nodes!!.size * ShowFragment.RIGHT_ANSWERS_TO_COMPLETE
+       // list.setWlName(newWlName)
+        //list.currentWeight = nodes!!.size * ShowFragment.RIGHT_ANSWERS_TO_COMPLETE
         list.maxWeight = list.currentWeight
 
         val group = ThreadGroup("Converting")
 
         for (node in nodes!!) {
 
-            val thread = Thread(group, Runnable { node.convertText(converter) })
+            val thread = Thread(group, Runnable { node.convertText(converter!!) })
 
             thread.start()
         }
@@ -229,21 +229,21 @@ class Delegator {
         while (group.activeCount() > 0) {
         }
 
-        MainActivity.database.nodeDao().insertAll(nodes)
-        MainActivity.database.listDao().insertList(list)
+/*        MainActivity.database.nodeDao().insertAll(nodes)
+        MainActivity.database.listDao().insertList(list)*/
 
 
         val message = Message()
 
-        message.what = MainActivity.HANDLE_MESSAGE_EXTRACTED
+       // message.what = MainActivity.HANDLE_MESSAGE_EXTRACTED
 
         val data = Bundle()
 
-        data.putString(MainActivity.WL_NAME, newWlName)
+        //data.putString(MainActivity.WL_NAME, newWlName)
 
         message.data = data
 
-        MainActivity.h.sendMessage(message)
+        //MainActivity.h.sendMessage(message)
 
 
     }
@@ -328,11 +328,11 @@ class Delegator {
                 if (waitingNode == null) {
 
                     waitingNode = Node()
-                    waitingNode!!.setWlName(newWlName)
+                    //waitingNode!!.setWlName(newWlName)
 
-                    waitingNode!!.setWeight(ShowFragment.RIGHT_ANSWERS_TO_COMPLETE)
+                   // waitingNode!!.setWeight(ShowFragment.RIGHT_ANSWERS_TO_COMPLETE)
 
-                    waitingNode!!.setPrimText(textPlusX.text)
+                   // waitingNode!!.setPrimText(textPlusX.text)
                     waitingNodeLang = Lang.ENG
 
                     continue
@@ -403,7 +403,7 @@ class Delegator {
          * The result of its work is a Node, filled with raw text
          */
         @Throws(IOException::class)
-        private fun textToken() {
+        fun textToken() {
 
             /**
              * This Method extract text and passes it to Node
@@ -417,11 +417,11 @@ class Delegator {
             if (newWlName == null) {
                 newWlName = text.trim { it <= ' ' }.replace(" ".toRegex(), "_").replace(":".toRegex(), "")
 
-                for (s in MainActivity.database.listDao().loadNames()) {
+/*                for (s in MainActivity.database.listDao().loadNames()) {
                     if (newWlName == s) {
                         isExists = true
                     }
-                }
+                }*/
             } else {
 
                 val nodeLang = curLang
@@ -431,7 +431,7 @@ class Delegator {
                 }
 
                 if (!isRusXSet) {
-                    textBuffer.add(TextPlusX(text, x, nodeLang))
+                    textBuffer.add(TextPlusX(text, x, nodeLang!!))
 
                 } else {
                     delegateText(text, x)
@@ -458,7 +458,7 @@ class Delegator {
 
             if (nodeLang === (if (waitingNodeLang === Lang.ENG) Lang.RUS else Lang.ENG)) {
 
-                waitingNode!!.setWlName(newWlName)
+                /*waitingNode!!.setWlName(newWlName)
                 if (nodeLang === Lang.ENG) {
 
                     nodes!!.add(waitingNode)
@@ -471,13 +471,13 @@ class Delegator {
 
                 } else
                     waitingNode!!.setTransText(text)
-                waitingNodeLang = nodeLang
+                waitingNodeLang = nodeLang*/
 
             } else {
-                if (waitingNodeLang === Lang.ENG)
-                    waitingNode!!.setPrimText(waitingNode!!.getPrimText().concat(text))
-                else
-                    waitingNode!!.setTransText(waitingNode!!.getTransText().concat(text))
+                //if (waitingNodeLang === Lang.ENG)
+                   // waitingNode!!.setPrimText(waitingNode!!.getPrimText().concat(text))
+                //else
+                   // waitingNode!!.setTransText(waitingNode!!.getTransText().concat(text))
             }
         }
     }

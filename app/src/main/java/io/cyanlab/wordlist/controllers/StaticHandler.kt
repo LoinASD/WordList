@@ -21,11 +21,11 @@ open class MainHandler  : Handler() {
         internal const val HANDLE_MESSAGE_DELETED = 5
         const val HANDLE_MESSAGE_EXISTS = 6
 
-        private var player = StaticHandler()
+       // private var player = StaticHandler
 
-        fun get(): StaticHandler{
+/*        fun get(): StaticHandler{
             return player
-        }
+        }*/
     }
 
 
@@ -38,12 +38,14 @@ open class MainHandler  : Handler() {
         try {
             pout = PipedOutputStream()
             pin = PipedInputStream(pout)
+/*
             parser = Thread(Runnable { PDFParser().parsePdf(file, pout) })
 
             extractor = Thread(Runnable { Delegator().extract(pin) })
             parser.setPriority(Thread.MAX_PRIORITY)
             parser.start()
             extractor.start()
+*/
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -63,7 +65,7 @@ open class MainHandler  : Handler() {
 
     override fun handleMessage(msg: Message) {
         super.handleMessage(msg)
-        val activity = wrActivity.get() ?: return
+        //val activity = wrActivity.get() ?: return
         if (msg.what == HANDLE_MESSAGE_PARSED) {
             parser = true
             //((TextView)activity.findViewById(R.id.pbText)).setText("Extrackting Text...");
@@ -78,7 +80,7 @@ open class MainHandler  : Handler() {
             parser = false
             extractor = false
 
-            Toast.makeText(activity, "Wordlist with equal name already exists", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(activity, "Wordlist with equal name already exists", Toast.LENGTH_SHORT).show()
 
             // activity.findViewById(R.id.fragment).setVisibility(View.VISIBLE);
            // activity.progBarLayout.setVisibility(View.INVISIBLE)
@@ -88,7 +90,7 @@ open class MainHandler  : Handler() {
             parser = false
             extractor = false
 
-            Toast.makeText(activity, "No dictionary found", Toast.LENGTH_SHORT).show()
+           //Toast.makeText(activity, "No dictionary found", Toast.LENGTH_SHORT).show()
 
             //activity.findViewById(R.id.fragment).setVisibility(View.VISIBLE);
             //activity.progBarLayout.setVisibility(View.INVISIBLE)
@@ -113,8 +115,8 @@ open class MainHandler  : Handler() {
         }
     }
 
-    object StaticHandler(activity: MainActivity): MainHandler() {
+/*    object StaticHandler(activity: MainActivity): MainHandler() {
 
         private val wrActivity: WeakReference<MainActivity> = WeakReference(activity)
-    }
+    }*/
 }
