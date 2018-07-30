@@ -11,41 +11,57 @@ import java.io.IOException
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.lang.ref.WeakReference
+import kotlin.concurrent.thread
 
-open class MainHandler  : Handler() {
+interface PDFManager{
+
+    fun startParsing(file: String)
+
+    val callback: PDFManager.Callback?
+
+    interface Callback{
+
+        fun onParserStarted()
+
+        fun onDelegatorStarted()
+
+        fun onParserFinished()
+
+        fun onDelegatorFinished(wlName: String?)
+
+        fun onError(what: String)
+    }
+}
+
+class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManager{
 
     companion object {
-        internal const val HANDLE_MESSAGE_PARSED = 1
-        const val HANDLE_MESSAGE_EXTRACTED = 2
-        const val HANDLE_MESSAGE_NOT_EXTRACTED = 4
-        internal const val HANDLE_MESSAGE_DELETED = 5
-        const val HANDLE_MESSAGE_EXISTS = 6
 
-       // private var player = StaticHandler
 
-/*        fun get(): StaticHandler{
-            return player
-        }*/
     }
-
 
     //-----CODE FROM MAIN ACTIVITY----------------
 
-    fun startParser(file: String) {
+    override fun startParsing(file: String) {
 
-        val pout: PipedOutputStream
-        val pin: PipedInputStream
         try {
-            pout = PipedOutputStream()
-            pin = PipedInputStream(pout)
-/*
-            parser = Thread(Runnable { PDFParser().parsePdf(file, pout) })
 
-            extractor = Thread(Runnable { Delegator().extract(pin) })
-            parser.setPriority(Thread.MAX_PRIORITY)
+            val pout = PipedOutputStream()
+            val pin = PipedInputStream(pout)
+
+            val parser = thread {
+
+                PDFParser(LightParserCallback()).parsePdf(file, pout)
+            }
+
+            val extractor = thread {
+
+                Delegator(LigthDelegatorCallback()).extract(pin)
+            }
+
+            parser.priority = Thread.MAX_PRIORITY
             parser.start()
             extractor.start()
-*/
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -55,16 +71,12 @@ open class MainHandler  : Handler() {
 
 //------------------------------------------------------
 
-    @Volatile
-    internal var parser: Boolean = false
-    @Volatile
-    internal var extractor: Boolean = false
-    @Volatile
+    /*@Volatile
     internal var wlName: String? = null
 
 
-    override fun handleMessage(msg: Message) {
-        super.handleMessage(msg)
+    fun handleMessage(msg: Message) {
+
         //val activity = wrActivity.get() ?: return
         if (msg.what == HANDLE_MESSAGE_PARSED) {
             parser = true
@@ -103,16 +115,61 @@ open class MainHandler  : Handler() {
 
             //LIST_NAME = wlName
 
-            /*Toast.makeText(activity, "Wordlist $LIST_NAME successfully extracted", Toast.LENGTH_LONG).show()
+            *//*Toast.makeText(activity, "Wordlist $LIST_NAME successfully extracted", Toast.LENGTH_LONG).show()
             activity.loadLines()
             (activity.lines as ShowFragment).adapterLoadData()
 
 
             //activity.findViewById(R.id.fragment).setVisibility(View.VISIBLE);
-            activity.progBarLayout.setVisibility(View.INVISIBLE)*/
+            activity.progBarLayout.setVisibility(View.INVISIBLE)*//*
 
 
         }
+    }*/
+
+    inner class LightParserCallback: PDFParser.Callback{
+
+        override fun onStart() {
+
+            callback?.onParserStarted()
+        }
+
+        override fun onStreamWritten() {}
+
+        override fun onFinish() {
+
+            callback?.onParserFinished()
+        }
+
+        override fun onErrorOccurred(what: String) {
+
+            callback?.onError(what)
+        }
+
+    }
+
+    inner class LigthDelegatorCallback: Delegator.Callback{
+
+        override fun onStart() {
+
+            callback?.onDelegatorStarted()
+        }
+
+        override fun onFinish(wlName: String?) {
+
+            callback?.onDelegatorFinished(wlName)
+        }
+
+        override fun onDictionaryFound() {}
+
+        override fun onConvertingStart() {}
+
+        override fun onErrorOccured(what: String) {
+
+            callback?.onError(what)
+        }
+
+
     }
 
 /*    object StaticHandler(activity: MainActivity): MainHandler() {

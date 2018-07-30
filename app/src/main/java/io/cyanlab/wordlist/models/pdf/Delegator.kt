@@ -9,7 +9,20 @@ import java.util.ArrayList
 import java.util.logging.Logger
 
 
-class Delegator {
+class Delegator(val callback: Callback? = null) {
+
+    interface Callback{
+
+        fun onStart()
+
+        fun onFinish(wlName: String?)
+
+        fun onDictionaryFound()
+
+        fun onConvertingStart()
+
+        fun onErrorOccured(what: String)
+    }
 
     private var ch: Int = 0
     private var io: PipedInputStream? = null
@@ -47,15 +60,22 @@ class Delegator {
     fun extract(io: PipedInputStream) {
 
         val startTime = System.currentTimeMillis()
+
+        callback?.onStart()
+
         this.io = io
+
         nodes = ArrayList()
+
         extractor = TextExtractor()
         converter = CharConverter()
+
         gotDictionary = false
         isExists = false
 
         try {
             parse()
+
             if (gotDictionary && !isExists) {
                 nodeCollect()
             } /*else if (isExists) {
@@ -65,6 +85,9 @@ class Delegator {
             }*/
 
         } catch (e: IOException) {
+
+            callback?.onErrorOccured("Input error in delegator")
+
             e.printStackTrace()
 
         }
@@ -92,8 +115,12 @@ class Delegator {
                 ch = io!!.read()
                 if (ch == 'e'.toInt()) {
                     val line = readLine()
-                    if (line == "gincmap")
+                    if (line == "gincmap"){
+
+                        callback?.onDictionaryFound()
                         parseCMap()
+
+                    }
                 }
             }
         }
@@ -219,6 +246,8 @@ class Delegator {
 
         val group = ThreadGroup("Converting")
 
+        callback?.onConvertingStart()
+
         for (node in nodes!!) {
 
             val thread = Thread(group, Runnable { node.convertText(converter!!) })
@@ -245,7 +274,7 @@ class Delegator {
 
         //MainActivity.h.sendMessage(message)
 
-
+        callback?.onFinish(newWlName)
     }
 
 
@@ -274,16 +303,23 @@ class Delegator {
          */
         private// Get current coordinates and pass it to node
         val nodeX: Double
+
             get() {
 
                 try {
                     ch = io!!.read()
+
                     while (ch.toChar() != '[') {
+
                         lineStr = readLine()
+
                         if (lineStr!!.endsWith("Tm")) {
+
                             val cord = lineStr!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
                             return java.lang.Double.parseDouble(cord[4])
                         }
+
                         ch = io!!.read()
                     }
                 } catch (e: IOException) {
