@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import io.cyanlab.wordlist.MainActivity
 import io.cyanlab.wordlist.models.pdf.Delegator
+import io.cyanlab.wordlist.models.pdf.Node
 import io.cyanlab.wordlist.models.pdf.PDFParser
 import java.io.IOException
 import java.io.PipedInputStream
@@ -27,7 +28,7 @@ interface PDFManager{
 
         fun onParserFinished()
 
-        fun onDelegatorFinished(wlName: String?)
+        fun onDelegatorFinished(wlName: String?, nodes: ArrayList<Node>)
 
         fun onError(what: String)
     }
@@ -155,9 +156,9 @@ class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManage
             callback?.onDelegatorStarted()
         }
 
-        override fun onFinish(wlName: String?) {
+        override fun onFinish(wlName: String?, nodes: ArrayList<Node>) {
 
-            callback?.onDelegatorFinished(wlName)
+            callback?.onDelegatorFinished(wlName, nodes)
         }
 
         override fun onDictionaryFound() {}
