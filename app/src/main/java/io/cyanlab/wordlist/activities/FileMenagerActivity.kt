@@ -135,8 +135,8 @@ class FileManagerActivity : AppCompatActivity(), View.OnClickListener {
         private var files: Array<String>? = null
         private var img: Int = 0
         private var sa: SimpleAdapter? = null
-        private val ATTRIBUTE_NAME_TEXT = "text"
-        private val ATTRIBUTE_NAME_IMAGE = "image"
+        private const val ATTRIBUTE_NAME_TEXT = "text"
+        private const val ATTRIBUTE_NAME_IMAGE = "image"
         private var CURRENT_PATH: String? = null// = "/sdcard/storage/0/Download";
         private val ROOT_PATH = Environment.getExternalStorageDirectory().absolutePath
     }
