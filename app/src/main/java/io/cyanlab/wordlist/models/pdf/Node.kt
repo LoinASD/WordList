@@ -37,6 +37,10 @@ class Node : Serializable {
 
                     while (cc != '>') {
                         numChar = StringBuilder()
+
+                        if (text.length - i < 4)
+                            return
+
                         for (k in 0..3) { // 4 - char`s length in HEX
                             numChar.append(cc)
                             cc = text[++i]

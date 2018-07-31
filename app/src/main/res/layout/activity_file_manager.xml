@@ -4,38 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/MaterialDarkerCyan"
     android:orientation="vertical"
     tools:context="io.cyanlab.wordlist.activities.FileManagerActivity">
 
     <LinearLayout
-        android:id="@+id/wayLayout"
+        android:id="@+id/file_head"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
+        android:background="@color/MaterialDarkerCyan"
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/file_back"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"
-            android:elevation="0dp"
+            android:elevation="4dp"
             android:padding="8dp"
-            android:src="@drawable/up" />
+            android:src="@drawable/ic_arrow_back" />
 
         <TextView
-            android:id="@+id/wayTextView"
+            android:id="@+id/file_head_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="24dp"
+            android:elevation="4dp"
             android:text="sdsdas"
-            android:textSize="16sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <ListView
-        android:id="@+id/treeListView"
+        android:id="@+id/file_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/shape" />
 
 </LinearLayout>

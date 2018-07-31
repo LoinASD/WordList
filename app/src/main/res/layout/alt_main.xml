@@ -27,7 +27,7 @@
         <FrameLayout
             android:id="@+id/app_bar_frame"
             android:layout_width="match_parent"
-            android:layout_height="120dp"></FrameLayout>
+            android:layout_height="wrap_content"></FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
     <FrameLayout
         android:id="@+id/fore_frame"

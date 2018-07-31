@@ -15,9 +15,9 @@ interface ExpandingMenuContainer{
 
     interface Listener{
 
-        fun onMenuAnimationStarted(isExpanded: Boolean)
+        fun onMenuAnimationStarted(isExpanded: Boolean){}
 
-        fun onMenuAnimationFinished(isExpanded: Boolean)
+        fun onMenuAnimationFinished(isExpanded: Boolean){}
     }
 }
 

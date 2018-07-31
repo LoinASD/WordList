@@ -2,17 +2,20 @@ package io.cyanlab.wordlist
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import io.cyanlab.wordlist.activities.FileManagerActivity
+import io.cyanlab.wordlist.activities.MainActivityStuff.SimpleMenuCollapser
+import io.cyanlab.wordlist.activities.MainActivityStuff.SimpleMenuController
+import io.cyanlab.wordlist.activities.MainActivityStuff.SimpleMenuExpander
+import io.cyanlab.wordlist.activities.MainActivityStuff.mPDFCallback
 import kotlinx.android.synthetic.main.alt_main.*
 import io.cyanlab.wordlist.activities.MainFragment
+import io.cyanlab.wordlist.activities.MainMenuFragment
 import io.cyanlab.wordlist.controllers.PDFManager
 import io.cyanlab.wordlist.controllers.mPDFManager
 import io.cyanlab.wordlist.models.database.DBHolder
 import io.cyanlab.wordlist.models.database.WordlistsDatabase
-import io.cyanlab.wordlist.models.pdf.Node
 import io.cyanlab.wordlist.views.BackdropMenuContainer
 import io.cyanlab.wordlist.views.ExpandingMenuContainer
 import kotlin.concurrent.thread
@@ -32,46 +35,24 @@ class MainActivity : AppCompatActivity(), DBHolder{
 
         menuContainer = BackdropMenuContainer(app_bar_frame, fore_frame, resources?.getDimension(R.dimen.shape_radius) ?: 0f)
 
-        menuContainer?.listeners?.add(SimpleMenuListener())
+        menuContainer?.listeners?.add(SimpleExpandingMenuListener())
 
-        main_toolbar.setNavigationOnClickListener {
+        main_toolbar.setNavigationOnClickListener(SimpleMenuController(menuContainer))
 
-            val intent = Intent(this, FileManagerActivity::class.java)
+        fore_frame.setOnClickListener(SimpleMenuCollapser(menuContainer))
 
-            startActivityForResult(intent, 0)
-
-            /*it.background = null
-
-            val isExpanded = menuContainer?.isMenuExpanded ?: return@setNavigationOnClickListener
-          
-            if (isExpanded)
-
-                menuContainer?.collapseMenu()
-            else
-                menuContainer?.expandMenu()*/
-        }
-
-        fore_frame.setOnClickListener {
-
-            val isExpanded = menuContainer?.isMenuExpanded ?: return@setOnClickListener
-
-            if (!isExpanded)
-                return@setOnClickListener
-
-            menuContainer?.collapseMenu()
-        }
-
-        main_toolbar?.setOnClickListener {
-
-            val isExpanded = menuContainer?.isMenuExpanded ?: return@setOnClickListener
-
-            if (isExpanded)
-                return@setOnClickListener
-
-            menuContainer?.expandMenu()
-        }
+        main_toolbar?.setOnClickListener(SimpleMenuExpander(menuContainer))
       
-        supportFragmentManager.beginTransaction().add(R.id.fore_frame, MainFragment()).commitNowAllowingStateLoss()
+        supportFragmentManager.beginTransaction().apply {
+
+            add(R.id.fore_frame, MainFragment())
+
+            val mainMenuFragment = MainMenuFragment()
+            mainMenuFragment.listener = SimpleMenuListener()
+
+            add(R.id.app_bar_frame, mainMenuFragment)
+
+        }.commitNowAllowingStateLoss()
 
         thread{
 
@@ -88,49 +69,13 @@ class MainActivity : AppCompatActivity(), DBHolder{
 
         val file = data?.getStringExtra("file") ?: return
 
-        val pdfManager: PDFManager = mPDFManager(object : PDFManager.Callback{
-
-            override fun onParserStarted() {
-
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Parser started", Toast.LENGTH_SHORT)?.show()
-                }
-            }
-
-            override fun onDelegatorStarted() {
-                runOnUiThread{
-
-                    Toast.makeText(this@MainActivity, "Delegator started", Toast.LENGTH_SHORT)?.show()
-                }
-            }
-
-            override fun onParserFinished() {
-                runOnUiThread{
-
-                    Toast.makeText(this@MainActivity, "Parser finished", Toast.LENGTH_SHORT)?.show()
-                }
-            }
-
-            override fun onDelegatorFinished(wlName: String?, nodes: ArrayList<Node>) {
-
-                runOnUiThread { Toast.makeText(this@MainActivity, "Delegator finished", Toast.LENGTH_SHORT)?.show() }
-
-                saveNodes(wlName, nodes)
-            }
-
-            override fun onError(what: String) {
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Error occurred: $what", Toast.LENGTH_SHORT)?.show()
-                }
-            }
-
-        })
+        val pdfManager: PDFManager = mPDFManager(mPDFCallback(this))
 
         pdfManager.startParsing(file)
     }
 
 
-    inner class SimpleMenuListener: ExpandingMenuContainer.Listener {
+    inner class SimpleExpandingMenuListener: ExpandingMenuContainer.Listener {
 
         override fun onMenuAnimationStarted(isExpanded: Boolean) {
 
@@ -143,12 +88,39 @@ class MainActivity : AppCompatActivity(), DBHolder{
             supportActionBar?.setHomeAsUpIndicator(icon)
         }
 
-        override fun onMenuAnimationFinished(isExpanded: Boolean) {
+    }
 
+    inner class SimpleMenuListener: MainMenuFragment.Listener{
 
+        override fun onPDFSelected() {
+
+            menuContainer?.listeners?.add(object : ExpandingMenuContainer.Listener{
+
+                override fun onMenuAnimationFinished(isExpanded: Boolean) {
+                    val intent = Intent(this@MainActivity, FileManagerActivity::class.java)
+
+                    menuContainer?.listeners?.remove(this)
+
+                    startActivityForResult(intent, 0)
+                }
+            })
+
+            menuContainer?.collapseMenu()
+        }
+    }
+
+    override fun onBackPressed() {
+
+        if (menuContainer?.isMenuExpanded == true){
+
+            menuContainer?.collapseMenu()
+
+            return
         }
 
+        super.onBackPressed()
     }
+
 }
 
 
