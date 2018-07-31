@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(){
             menuContainer?.expandMenu()
         }
       
-        supportFragmentManager.beginTransaction().add(R.id.frame, MainFragment()).commitNowAllowingStateLoss()
+        supportFragmentManager.beginTransaction().add(R.id.fore_frame, MainFragment()).commitNowAllowingStateLoss()
 
     }
 

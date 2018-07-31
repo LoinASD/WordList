@@ -25,18 +25,6 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <io.cyanlab.wordlist.views.Backdrop
-            android:id="@+id/backdrop"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <include layout="@layout/backdrop_backpanel" />
-
-            <include layout="@layout/backdrop_forepanel" />
-
-
-        </io.cyanlab.wordlist.views.Backdrop>
-
     </com.google.android.material.appbar.AppBarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

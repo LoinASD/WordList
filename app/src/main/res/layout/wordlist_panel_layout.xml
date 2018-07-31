@@ -43,4 +43,12 @@
         android:gravity="bottom|start"
         android:text="progress:" />
 
+    <ProgressBar
+        android:id="@+id/list_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp" />
+
 </androidx.cardview.widget.CardView>

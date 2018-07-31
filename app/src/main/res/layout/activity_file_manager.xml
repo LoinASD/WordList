@@ -15,20 +15,22 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="#fff"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"
             android:elevation="0dp"
-            app:srcCompat="@drawable/up" />
+            android:padding="8dp"
+            android:src="@drawable/up" />
 
         <TextView
             android:id="@+id/wayTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_weight="6" />
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="24dp"
+            android:text="sdsdas"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <ListView
