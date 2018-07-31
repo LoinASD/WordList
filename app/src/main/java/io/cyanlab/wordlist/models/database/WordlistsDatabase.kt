@@ -6,8 +6,8 @@ import io.cyanlab.wordlist.models.pdf.Node
 import io.cyanlab.wordlist.models.pdf.WordList
 
 
-@Database(entities = arrayOf(WordList::class, Node::class), version = 1)
-abstract class LocalDatabase : RoomDatabase() {
+@Database(entities = [(WordList::class), (Node::class)], version = 1)
+abstract class WordlistsDatabase : RoomDatabase() {
 
     abstract fun listDao(): ListDao
 

@@ -26,16 +26,16 @@ class Delegator(val callback: Callback? = null) {
 
     private var ch: Int = 0
     private var io: PipedInputStream? = null
-    private var converter: CharConverter? = null
+    private val converter = CharConverter()
     private var newWlName: String? = null
     private var isExists: Boolean = false
     //private StringBuilder text;
     private var range: Int = 0
     private var progress: Int = 0
-    private var nodes: ArrayList<Node>? = null
+    private val nodes: ArrayList<Node> = ArrayList()
     private var waitingNode: Node? = null
     private var waitingNodeLang: Lang? = null
-    private var extractor: TextExtractor? = null
+    private val extractor = TextExtractor()
 
     private val COINS_TO_SET_X = 10
 
@@ -65,11 +65,6 @@ class Delegator(val callback: Callback? = null) {
 
         this.io = io
 
-        nodes = ArrayList()
-
-        extractor = TextExtractor()
-        converter = CharConverter()
-
         gotDictionary = false
         isExists = false
 
@@ -78,11 +73,13 @@ class Delegator(val callback: Callback? = null) {
 
             if (gotDictionary && !isExists) {
                 nodeCollect()
-            } /*else if (isExists) {
-                io.cyanlab.wordlist.controllers.MainHandler.HANDLE_MESSAGE_EXISTS)
+            } else if (isExists) {
+
+                callback?.onErrorOccured("List already exists")
             } else {
-                MainActivity.h.sendEmptyMessage(MainActivity.HANDLE_MESSAGE_NOT_EXTRACTED)
-            }*/
+
+                callback?.onErrorOccured("No dictionary found")
+            }
 
         } catch (e: IOException) {
 
@@ -109,7 +106,7 @@ class Delegator(val callback: Callback? = null) {
             if (ch == 'B'.toInt()) {
                 ch = io!!.read()
                 if (ch == 'T'.toInt()) {
-                    extractor!!.textToken()
+                    extractor.textToken()
                 }
             } else if (ch == 'b'.toInt()) {
                 ch = io!!.read()
@@ -154,7 +151,7 @@ class Delegator(val callback: Callback? = null) {
                     chars = lineStr!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     val c1 = Integer.parseInt(chars[0].substring(1, range + 1), 16)
                     val c2 = Integer.parseInt(chars[1].substring(1, range + 1), 16)
-                    converter!!.addNewRange(c1, c1, c2)
+                    converter.addNewRange(c1, c1, c2)
                 }
             }
             if (lineStr!!.endsWith("beginbfrange")) {
@@ -175,14 +172,14 @@ class Delegator(val callback: Callback? = null) {
                         var dif = c1
                         for (s in arr) {
                             c = Integer.parseInt(s.substring(1, range + 1), 16)
-                            converter!!.addNewRange(dif, dif, c)
+                            converter.addNewRange(dif, dif, c)
                             dif++
                         }
                     } else {
                         val strC3 = chars[2].substring(1, range + 1)
                         val c3 = Integer.parseInt(strC3, 16)
                         //System.out.printf("%nc3 = %s; int3: %d%n", strC3, c3);
-                        converter!!.addNewRange(c1, c2, c3)
+                        converter.addNewRange(c1, c2, c3)
                     }
                 }
             }
@@ -237,10 +234,10 @@ class Delegator(val callback: Callback? = null) {
           This method take all prims, convert text and sort
          */
 
-        nodes!!.add(waitingNode!!)
+        nodes.add(waitingNode!!)
 
         val list = WordList()
-       // list.setWlName(newWlName)
+       // list.setName(newWlName)
         //list.currentWeight = nodes!!.size * ShowFragment.RIGHT_ANSWERS_TO_COMPLETE
         list.maxWeight = list.currentWeight
 
@@ -248,18 +245,9 @@ class Delegator(val callback: Callback? = null) {
 
         callback?.onConvertingStart()
 
-        val nodes = this.nodes
-
-        if (nodes == null){
-
-            callback?.onErrorOccured("Empty list in delegator")
-
-            return
-        }
-
         for (node in nodes) {
 
-            val thread = Thread(group, Runnable { node.convertText(converter!!) })
+            val thread = Thread(group, Runnable { node.convertText(converter) })
 
             thread.start()
         }
@@ -356,13 +344,17 @@ class Delegator(val callback: Callback? = null) {
 
                 if (waitingNode == null) {
 
-                    waitingNode = Node()
-                    //waitingNode!!.setWlName(newWlName)
+                    val newNode = Node()
 
-                   // waitingNode!!.setWeight(ShowFragment.RIGHT_ANSWERS_TO_COMPLETE)
+                    newNode.wlName = newWlName
 
-                   // waitingNode!!.setPrimText(textPlusX.text)
+                    newNode.weight = 3
+
+                    newNode.primText = textPlusX.text
+
                     waitingNodeLang = Lang.ENG
+
+                    waitingNode = newNode
 
                     continue
                 }
@@ -451,24 +443,24 @@ class Delegator(val callback: Callback? = null) {
                         isExists = true
                     }
                 }*/
-            } else {
 
-                val nodeLang = curLang
-
-                if (!isRusXSet && nodeLang === Lang.BRACE) {
-                    handleX(x)
-                }
-
-                if (!isRusXSet) {
-                    textBuffer.add(TextPlusX(text, x, nodeLang!!))
-
-                } else {
-                    delegateText(text, x)
-                }
-
+                return
 
             }
 
+            val nodeLang = curLang
+
+            if (!isRusXSet && nodeLang === Lang.BRACE) {
+                handleX(x)
+            }
+
+            if (!isRusXSet) {
+
+                textBuffer.add(TextPlusX(text, x, nodeLang!!))
+
+            } else {
+                delegateText(text, x)
+            }
 
         }
 
@@ -485,28 +477,36 @@ class Delegator(val callback: Callback? = null) {
 
             val nodeLang = if (x >= engX && x < rusX - xArea) Lang.ENG else Lang.RUS
 
+            val oldWN = waitingNode ?: return
+
             if (nodeLang === (if (waitingNodeLang === Lang.ENG) Lang.RUS else Lang.ENG)) {
 
-                /*waitingNode!!.setWlName(newWlName)
+                oldWN.wlName = newWlName
+
                 if (nodeLang === Lang.ENG) {
 
-                    nodes!!.add(waitingNode)
+                    nodes.add(oldWN)
 
-                    waitingNode = Node()
+                    val newWN = Node()
 
-                    waitingNode!!.setWeight(ShowFragment.RIGHT_ANSWERS_TO_COMPLETE)
+                    newWN.weight = 3
 
-                    waitingNode!!.setPrimText(text)
+                    newWN.primText = text
+
+                    waitingNode = newWN
 
                 } else
-                    waitingNode!!.setTransText(text)
-                waitingNodeLang = nodeLang*/
+
+                    waitingNode?.transText = text
+
+                waitingNodeLang = nodeLang
 
             } else {
-                //if (waitingNodeLang === Lang.ENG)
-                   // waitingNode!!.setPrimText(waitingNode!!.getPrimText().concat(text))
-                //else
-                   // waitingNode!!.setTransText(waitingNode!!.getTransText().concat(text))
+                if (waitingNodeLang === Lang.ENG)
+
+                   waitingNode?.primText = waitingNode?.primText + text
+                else
+                   waitingNode?.transText = waitingNode?.transText + text
             }
         }
     }

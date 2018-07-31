@@ -19,11 +19,11 @@ interface NodeDao {
     @get:Query("SELECT * FROM node")
     val allNodes: List<Node>
 
-    @Query("SELECT * FROM node WHERE nodeWLName = :wlName")
-    fun getNodes(wlName: String): List<Node>
+    @Query("SELECT * FROM node WHERE nodeWLName = :name")
+    fun getNodes(name: String): List<Node>
 
-    @Query("SELECT * FROM node WHERE (nodeWLName = :wlName & id < :last)")
-    fun getNodes(wlName: String, last: Int): List<Node>
+    @Query("SELECT * FROM node WHERE (nodeWLName = :name & id < :last)")
+    fun getNodes(name: String, last: Int): List<Node>
 
 
     @Transaction
@@ -37,8 +37,8 @@ interface NodeDao {
     fun updateNode(node: Node)
 
     @Transaction
-    @Query("DELETE FROM node WHERE nodeWLName = :wlName")
-    fun deleteNodes(wlName: String)
+    @Query("DELETE FROM node WHERE nodeWLName = :name")
+    fun deleteNodes(name: String)
 
     @Delete
     fun deleteNode(node: Node)

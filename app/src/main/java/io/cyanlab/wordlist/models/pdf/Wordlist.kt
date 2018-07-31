@@ -14,7 +14,9 @@ class WordList {
 
     var currentWeight: Int = 0
 
-    var wlName: String? = null
+    var name: String? = null
 
+    var primLang: String? = null
 
+    var transLang: String? = null
 }

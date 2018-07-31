@@ -61,8 +61,6 @@ class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManage
             }
 
             parser.priority = Thread.MAX_PRIORITY
-            parser.start()
-            extractor.start()
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -73,7 +71,7 @@ class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManage
 //------------------------------------------------------
 
     /*@Volatile
-    internal var wlName: String? = null
+    internal var name: String? = null
 
 
     fun handleMessage(msg: Message) {
@@ -85,7 +83,7 @@ class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManage
         }
         if (msg.what == HANDLE_MESSAGE_EXTRACTED) {
             extractor = true
-            //wlName = msg.data.getString(WL_NAME)
+            //name = msg.data.getString(WL_NAME)
 
 
         }
@@ -114,7 +112,7 @@ class mPDFManager(override val callback: PDFManager.Callback? = null): PDFManage
             parser = false
             extractor = false
 
-            //LIST_NAME = wlName
+            //LIST_NAME = name
 
             *//*Toast.makeText(activity, "Wordlist $LIST_NAME successfully extracted", Toast.LENGTH_LONG).show()
             activity.loadLines()

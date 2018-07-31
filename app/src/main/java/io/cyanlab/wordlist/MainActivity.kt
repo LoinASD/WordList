@@ -1,34 +1,27 @@
 package io.cyanlab.wordlist
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import io.cyanlab.wordlist.activities.FileManagerActivity
 import kotlinx.android.synthetic.main.alt_main.*
 import io.cyanlab.wordlist.activities.MainFragment
+import io.cyanlab.wordlist.controllers.PDFManager
+import io.cyanlab.wordlist.controllers.mPDFManager
+import io.cyanlab.wordlist.models.database.DBHolder
+import io.cyanlab.wordlist.models.database.WordlistsDatabase
+import io.cyanlab.wordlist.models.pdf.Node
+import io.cyanlab.wordlist.views.BackdropMenuContainer
+import io.cyanlab.wordlist.views.ExpandingMenuContainer
+import kotlin.concurrent.thread
 
-interface ExpandingMenuContainer{
-
-    var isMenuExpanded: Boolean
-
-    fun expandMenu()
-
-    fun collapseMenu()
-
-    val listeners: ArrayList<Listener>
-
-    interface Listener{
-
-        fun onMenuAnimationStarted(isExpanded: Boolean)
-
-        fun onMenuAnimationFinished(isExpanded: Boolean)
-    }
-}
-
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), DBHolder{
 
     var menuContainer: ExpandingMenuContainer? = null
+
+    override var database: WordlistsDatabase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +36,19 @@ class MainActivity : AppCompatActivity(){
 
         main_toolbar.setNavigationOnClickListener {
 
+            val intent = Intent(this, FileManagerActivity::class.java)
+
+            startActivityForResult(intent, 0)
+
+            /*it.background = null
+
             val isExpanded = menuContainer?.isMenuExpanded ?: return@setNavigationOnClickListener
           
             if (isExpanded)
 
                 menuContainer?.collapseMenu()
             else
-                menuContainer?.expandMenu()
+                menuContainer?.expandMenu()*/
         }
 
         fore_frame.setOnClickListener {
@@ -74,14 +73,62 @@ class MainActivity : AppCompatActivity(){
       
         supportFragmentManager.beginTransaction().add(R.id.fore_frame, MainFragment()).commitNowAllowingStateLoss()
 
+        thread{
+
+            database = Room.databaseBuilder(applicationContext, WordlistsDatabase::class.java, "base.db").build()
+        }
+
     }
 
-/*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        menuInflater.inflate(R.menu.main_menu, menu)
+        if (requestCode != 0)
+            return
 
-        return super.onCreateOptionsMenu(menu)
-    }*/
+        val file = data?.getStringExtra("file") ?: return
+
+        val pdfManager: PDFManager = mPDFManager(object : PDFManager.Callback{
+
+            override fun onParserStarted() {
+
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "Parser started", Toast.LENGTH_SHORT)?.show()
+                }
+            }
+
+            override fun onDelegatorStarted() {
+                runOnUiThread{
+
+                    Toast.makeText(this@MainActivity, "Delegator started", Toast.LENGTH_SHORT)?.show()
+                }
+            }
+
+            override fun onParserFinished() {
+                runOnUiThread{
+
+                    Toast.makeText(this@MainActivity, "Parser finished", Toast.LENGTH_SHORT)?.show()
+                }
+            }
+
+            override fun onDelegatorFinished(wlName: String?, nodes: ArrayList<Node>) {
+
+                runOnUiThread { Toast.makeText(this@MainActivity, "Delegator finished", Toast.LENGTH_SHORT)?.show() }
+
+                saveNodes(wlName, nodes)
+            }
+
+            override fun onError(what: String) {
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "Error occurred: $what", Toast.LENGTH_SHORT)?.show()
+                }
+            }
+
+        })
+
+        pdfManager.startParsing(file)
+    }
+
 
     inner class SimpleMenuListener: ExpandingMenuContainer.Listener {
 
@@ -104,53 +151,5 @@ class MainActivity : AppCompatActivity(){
     }
 }
 
-class BackdropMenuContainer(val backPanel: View?, private val frontPanel: View?, var offset: Float): ExpandingMenuContainer{
-
-    override var isMenuExpanded: Boolean = false
-
-    override fun expandMenu() {
-
-        isMenuExpanded = true
-
-        animateBackdrop(isMenuExpanded)
-    }
-
-    override fun collapseMenu() {
-
-        isMenuExpanded = false
-
-        animateBackdrop(isMenuExpanded)
-    }
-
-    private fun animateBackdrop(isExpanded: Boolean){
-
-        val dropHeight = backPanel?.height?.toFloat() ?: 0f - offset
-
-        val startTrans = if (!isExpanded) dropHeight else 0f
-        val endTrans = if (!isExpanded) 0f else dropHeight
-
-        val startAlpha = if (!isExpanded) 0.6f else 1f
-        val endAlpha = if (!isExpanded) 1f else 0.6f
-
-        frontPanel?.translationY = startTrans
-        frontPanel?.alpha = startAlpha
-
-        listeners.forEach { it.onMenuAnimationStarted(isExpanded) }
-
-        frontPanel?.animate()?.
-                translationY(endTrans)?.
-                alpha(endAlpha)?.
-                setDuration(225)?.
-                setInterpolator(AccelerateDecelerateInterpolator())?.
-                withEndAction {
-
-                    listeners.forEach {it.onMenuAnimationFinished(isExpanded)}
-                }?.
-                start()
-    }
-
-    override val listeners = ArrayList<ExpandingMenuContainer.Listener>()
-
-}
 
 

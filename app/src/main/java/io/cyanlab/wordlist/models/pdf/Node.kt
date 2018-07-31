@@ -18,18 +18,7 @@ class Node : Serializable {
 
     var primText: String? = null
 
-    private var transText: String? = null
-
-    fun getTransText(): String? {
-        return transText
-    }
-
-    fun setTransText(transText: String?) {
-        if (transText == null)
-            this.transText = ""
-        else
-            this.transText = transText
-    }
+    var transText: String? = null
 
     internal fun convertText(converter: CharConverter) {
         System.out.printf("P: %s%nT: %s%n%n", primText, transText)

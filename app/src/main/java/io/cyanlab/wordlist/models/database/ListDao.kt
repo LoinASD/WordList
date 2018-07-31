@@ -16,12 +16,12 @@ interface ListDao {
     val allLists: List<WordList>
 
     @Transaction
-    @Query("SELECT wlName, id FROM WordList WHERE id = :id")
-    fun getWordlist(id: Int): FilledList
+    @Query("SELECT * FROM WordList WHERE id = :id")
+    fun getWordlist(id: Int): WordList
 
     @Transaction
-    @Query("SELECT * FROM WordList WHERE wlName = :wlName")
-    fun getWordlist(wlName: String): WordList
+    @Query("SELECT * FROM WordList WHERE name = :name")
+    fun getWordlist(name: String): WordList
 
     @Update
     fun updateList(list: WordList)
@@ -32,10 +32,10 @@ interface ListDao {
     @Delete
     fun deleteList(list: WordList)
 
-    @Query("DELETE FROM wordlist WHERE wlName = :wlName")
-    fun deleteList(wlName: String)
+    @Query("DELETE FROM wordlist WHERE name = :name")
+    fun deleteList(name: String)
 
-    @Query("SELECT wlName FROM wordlist")
+    @Query("SELECT name FROM wordlist")
     fun loadNames(): List<String>
 
 
