@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin_frame_layout">0dp</dimen>
+    <dimen name="line_margin">8dp</dimen>
     <dimen name="backdrop_height">300dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="shape_radius">24dp</dimen>

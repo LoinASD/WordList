@@ -16,7 +16,7 @@ class WordList {
 
     var name: String? = null
 
-    var primLang: String? = null
+    var firstLang: String? = null
 
-    var transLang: String? = null
+    var secondLang: String? = null
 }
