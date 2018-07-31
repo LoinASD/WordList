@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
-//import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.alt_main.*
+import io.cyanlab.wordlist.activities.MainFragment
 
 interface ExpandingMenuContainer{
 
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(){
         main_toolbar.setNavigationOnClickListener {
 
             val isExpanded = menuContainer?.isMenuExpanded ?: return@setNavigationOnClickListener
-
+          
             if (isExpanded)
 
                 menuContainer?.collapseMenu()
@@ -71,6 +71,9 @@ class MainActivity : AppCompatActivity(){
 
             menuContainer?.expandMenu()
         }
+      
+        supportFragmentManager.beginTransaction().add(R.id.frame, MainFragment()).commitNowAllowingStateLoss()
+
     }
 
 /*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {

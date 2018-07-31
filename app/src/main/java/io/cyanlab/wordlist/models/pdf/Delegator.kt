@@ -15,7 +15,7 @@ class Delegator(val callback: Callback? = null) {
 
         fun onStart()
 
-        fun onFinish(wlName: String?)
+        fun onFinish(wlName: String?, nodes: ArrayList<Node>)
 
         fun onDictionaryFound()
 
@@ -248,7 +248,16 @@ class Delegator(val callback: Callback? = null) {
 
         callback?.onConvertingStart()
 
-        for (node in nodes!!) {
+        val nodes = this.nodes
+
+        if (nodes == null){
+
+            callback?.onErrorOccured("Empty list in delegator")
+
+            return
+        }
+
+        for (node in nodes) {
 
             val thread = Thread(group, Runnable { node.convertText(converter!!) })
 
@@ -258,23 +267,7 @@ class Delegator(val callback: Callback? = null) {
         while (group.activeCount() > 0) {
         }
 
-/*        MainActivity.database.nodeDao().insertAll(nodes)
-        MainActivity.database.listDao().insertList(list)*/
-
-
-        val message = Message()
-
-       // message.what = MainActivity.HANDLE_MESSAGE_EXTRACTED
-
-        val data = Bundle()
-
-        //data.putString(MainActivity.WL_NAME, newWlName)
-
-        message.data = data
-
-        //MainActivity.h.sendMessage(message)
-
-        callback?.onFinish(newWlName)
+        callback?.onFinish(newWlName, nodes)
     }
 
 

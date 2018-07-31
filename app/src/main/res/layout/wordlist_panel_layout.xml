@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/wordlist_panel"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    card_view:cardCornerRadius="8dp"
+    android:background="@drawable/wordlist_background">
+
+    <TextView
+        android:id="@+id/wordlist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal|center"
+        android:layout_margin="16dp"
+        android:gravity="top|center_vertical|center_horizontal"
+        android:text="Travelling" />
+
+    <TextView
+        android:id="@+id/wordlist_first_lang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="16dp"
+        android:gravity="top|start"
+        android:text="ENG" />
+
+    <TextView
+        android:id="@+id/wordlist_second_lang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:gravity="top|end"
+        android:text="RU" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:gravity="bottom|start"
+        android:text="progress:" />
+
+</androidx.cardview.widget.CardView>
